@@ -8,4 +8,5 @@ Http port in the `default.json5` file is served on 8080, so in a new terminal ty
 - To set the `"webhookSecret"`, go to the [Dolby.io Dashboard](https://streaming.dolby.io/#/webhooks) and click to the webhook you created, copy the Webhook Secret from the Settings of that webhook and replace the `null` in the `default.json5` file.
 - Lastly, from your terminal type `node index.js` and see the `Server listening` then go to your [Dolby.io Dashboard](https://streaming.dolby.io/#/tokens) and start a broadcast clicking the `BROADCAST` button.
 You should be able to see the POST requests with 200 OK response in ngrok and images from the stream are being saved in the directory that you set in your `default.json5` file.
-![Here's the demo](save-thumbnails-locally.gif)
+
+![Here's the demo](../assets/save-thumbnails-locally.gif)
