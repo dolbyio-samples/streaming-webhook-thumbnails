@@ -4,7 +4,7 @@ To be able to use the code in this repository you need to have npm installed and
 
 - To receive thumbnail images locally, we need to give our localhost's URL to the webhook we'll be creating in the next steps. Ngrok will create a public facing URL for some amount of time and re-direct any traffic to that URL to your local machine. To install ngrok see this website: https://ngrok.com/download
 - - MacOS users can install ngrok via Homebrew: `brew install ngrok/ngrok/ngrok`
-Http port in the `default.json5` file is served on 8080, so in a new terminal type `ngrok http 8080`. The terminal will clear and show the status with two Forwarding http address, such as http://123456789.ngrok.io/. You can copy the Forwarding URL to use creating a webhook. The terminal shows a log of requests while ngrok is active, in our case we will be seeing POST requests every 30 seconds.
+Http port in the `default.json5` file is served on 8080, so in a new terminal type `ngrok http 8080`. The terminal will clear and show the status with Forwarding http address, such as http://123456789.ngrok.io/. You can copy the Forwarding URL to use creating a webhook. The terminal shows a log of requests while ngrok is active, in our case we will be seeing POST requests every 30 seconds.
 
 - Next, you need to create a webhook from the [Dolby.io Dashboard](https://streaming.dolby.io/#/webhooks) by clicking `Create`, enable `Thumbnail hooks` and paste the Forwarding URL you recieved from the previous step to the `Webhook url` part.
 
