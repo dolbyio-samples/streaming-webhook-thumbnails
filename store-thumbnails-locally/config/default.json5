@@ -1,0 +1,9 @@
+{
+  "http": {
+    "port": 8080
+  },
+  "millicast": {
+    "thumbnailDir": null,
+    "webhookSecret": null
+  }
+}
