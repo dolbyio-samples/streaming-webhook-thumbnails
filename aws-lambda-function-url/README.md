@@ -2,7 +2,7 @@
 
 This repository includes the sample code to receive and store thumbnails after you set up an Lambda function enabling Function URL and setting up an S3 Bucket.
 
-To learn how to do it step by step, follow [this](https://confluence.dolby.net/kb/display/DOLBYIO/Store+Thumbnails+from+Your+Live+Stream+Using+AWS+Lambda+and+S3) blog post.
+To learn how to do it step by step, follow [this](https://google.com) blog post.
 
 
 If you decide to use different names than the ones in the example, you need to update the package name(in `package.json`), and update the S3 bucket name in `index.mjs`. Then, type `npm install` to obtain `node_modules` and `package-lock.json` locally and zip your folder to be able to use this sample code directly from AWS Lambda Console code editor.
