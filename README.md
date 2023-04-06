@@ -1,4 +1,5 @@
 # Use Webhooks to Receive the Generated Thumbnails of the Ongoing Stream
+![Thumbnail Blog Post Image](./assets/Updating-Thumbnails-Live-Stream-featured.jpg)
 This repository includes three different sample code directories about how to receive and store generated thumbnail images from the ongoing stream. After you create a webhook on Dolby.io either using Dashboard or API, you can set the Webhook URL depending on your choice. 
 - To create a token on your Dashboard go to https://streaming.dolby.io/#/tokens  and click `Create` button. After you set the Basic settings, you need to enable `Thumbnail Preview` from Advanced settings.
 
