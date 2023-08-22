@@ -7,9 +7,6 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
-        "aws-sdk": "^2.1339.0",
-        "axios": ">=0.21.1",
-        "crypto": "^1.0.1",
-        "util": "^0.12.5"
+        "aws-sdk": "^2.1442.0"
     }
 }

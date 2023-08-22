@@ -9,13 +9,9 @@ The AWS SAM Command Line Interface (CLI) lets you locally build, test, and debug
 Complete all [prerequisites](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/prerequisites.html) before moving forward with installing AWS SAM CLI. This includes:
 
 1.  Signing up for an AWS account.
-
 2.  Creating an administrative IAM user.
-
 3.  Creating an access key ID and secret access key.
-
 4.  Installing the AWS CLI.
-
 5.  Configuring AWS credentials.
 
 Then, follow [this](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) tutorial to install AWS SAM CLI. Then, create a [sample Hello World](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html) application to start with a project template. Choose the options below to configure a project from the CLI.
@@ -30,7 +26,7 @@ We need to update the *template.yaml* with adding a new API and reference it und
 
 Add this code block under your Resources:
 
-```
+```yaml
 MyApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -40,20 +36,19 @@ MyApi:
 ```
 And, reference it under Events like this:
 
-
-```
+```yaml
 Events:
-        HelloWorldApi:
-          Type: Api
-          Properties:
-            RestApiId: !Ref MyApi
-            Path: /hello
-            Method: POST
+  HelloWorldApi:
+    Type: Api
+    Properties:
+      RestApiId: !Ref MyApi
+      Path: /hello
+      Method: POST
 ```
 
 Remove the *ApplicationResourceGroup* and *Outputs* part. Your *template.yaml* file should look like this at the end (Description part is same with how you specify your project's name during installation, so it may be different in your project):
 
-```
+```yaml
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
@@ -61,7 +56,8 @@ Description: >
 
   Sample SAM Template for blog-aws-sam-thumbnails
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+# More info about Globals:
+# https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
@@ -74,7 +70,9 @@ Resources:
       BinaryMediaTypes:
       - image/jpeg
   HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    # More info about Function Resource:
+    # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: hello-world/
       Handler: app.lambdaHandler
@@ -96,22 +94,22 @@ Let's test if we can successfully set up our Lambda Function and API Gateway. Fo
 
 Go to *app.mjs* under *hello-world* folder and add a console.log(event). Your app.mjs should look like:
 
-```
+```javascript
 export const lambdaHandler = async (event, context) => {
     try {
         console.log(event)
         return {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                message: 'hello world',
-            })
+            statusCode: 200,
+            body: 'OK',
         }
     } catch (err) {
         console.log(err);
-        return err;
+        return {
+            statusCode: 500,
+            body: 'An error occurred!',
+        }
     }
 };
-
 ```
 
 Then, go to root of your project (where *template.yaml* is available) and run ***sam build*** in your terminal. After you get  Build Succeeded notification, run ***sam deploy --guided*** Say yes(Y) to deployment wizard's prompts as shown below:
@@ -139,7 +137,7 @@ Now, you can use the "Invoke URL" as a webhook URL by adding the /hello Path to 
 After successfully seeing the log of the event in the "CloudWatch", we are now ready to implement the functionality to handle the event to compare signatures and upload the thumbnail image to the created S3 bucket.\
 → First, replace the entire *app.mjs* file in your project with the code in the [app.mjs file](./hello-world/app.mjs).
 
-→ Then navigate through your *hello-world* folder directory --- the directory that contains the Lambda function --- and type ***npm install crypto util aws-sdk*** to install the packages that our code uses. Save your code and go back to the root directory of your project where the *template.yaml* exists.
+→ Then navigate through your *hello-world* folder directory --- the directory that contains the Lambda function --- and type ***npm install aws-sdk*** to install the packages that our code uses. Save your code and go back to the root directory of your project where the *template.yaml* exists.
 
 → Next, we need to create an S3 bucket. From your AWS Management Console search S3, from Buckets click *'Create Bucket'* and set a name for your bucket. 
 ![create a bucket](../assets/create%20bucket.png)
@@ -152,7 +150,7 @@ Then, use services search bar for IAM, and go to *Policies* under IAM Dashboard.
 
 ![s3 gif](../assets/s3.gif)
 
-→ Now, we need to add the WEBHOOK_SECRET as an environment variable to our Lambda function. Go to the [Dolby.io Dashboard](https://streaming.dolby.io/#/webhooks) and click to the webhook you created, copy the Webhook Secret. Navigate to the AWS Lambda Console Configuration menu and add an environment variable called WEBHOOK_SECRET. 
+→ Now, we need to add the WEBHOOK_SECRET as an environment variable to our Lambda function. Go to the [Dolby.io Dashboard](https://streaming.dolby.io/#/webhooks) and click to the webhook you created, copy the Webhook Secret. Navigate to the AWS Lambda Console Configuration menu and add an environment variable called WEBHOOK_SECRET. Create a new environment variable called AWS_S3_BUCKET_NAME and set the name of your AWS S3 bucket where you want to store the thumbnails into.
 
 ![webhook-secret-dolby](../assets/webhook-secret-dolby.png)
 
@@ -164,7 +162,6 @@ Before you deploy the project, go to your *samconfig.toml* and change the *'reso
 
 #### **TEST TIME!!!**
 
-
 Now, go back to your [Dolby.io](http://Dolby.io) dashboard and start a Broadcast. Then, navigate back to your lambda function's "CloudWatch logs". You should be receiving an event log every 30 seconds, and check your S3 bucket and view the logged image objects.
 
-And, that's it! Now, you know how you can receive and store the thumbnail images of the ongoing stream.💪
+And, that's it! Now, you know how you can receive and store the thumbnail images of the ongoing stream.
