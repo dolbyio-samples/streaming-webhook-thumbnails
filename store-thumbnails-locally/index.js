@@ -6,7 +6,6 @@ const FsA = Fs.promises;
 const Http = require('http');
 const Os = require('os');
 const Path = require('path');
-const Util = require('util');
 
 const httpConfig = Config.util.toObject(Config.get('http'));
 // remove null entries
@@ -34,35 +33,39 @@ async function mainAsync() {
     const isThumbnail = req.is('image/jpeg');
     const chunks = [];
     req.on('data', (chunk) => chunks.push(chunk));
-    req.on('end', () => {
+    req.on('end', async () => {
+      if (!isThumbnail) {
+        res
+          .status(400)
+          .send('Invalid content!');
+        return;
+      }
+
       const body = Buffer.concat(chunks);
 
       const calculatedSignature = 'sha1=' + Crypto.createHmac('sha1', webhookSecret).update(body).digest('hex');
       const headerSignature = req.get('X-Millicast-Signature');
 
       if (calculatedSignature !== headerSignature) {
-        console.warn('Invalid signature sent to us, unsafe data. ' +
-          `HeaderSignature: ${headerSignature}. CalculatedSignature: ${calculatedSignature}. ` +
-          `IsThumbnail: ${isThumbnail}}. Body: ${isThumbnail ? 'binary data': body.toString()}`);
-        res.status(400).send('BAD');
+        console.warn(`Invalid signature - received: ${headerSignature} - calculated: ${calculatedSignature}.`);
+        res
+          .status(400)
+          .send('Invalid signature!');
         return;
       }
 
-      if (!isThumbnail) {
-        const webhookEvent = JSON.parse(body.toString());
-        // operate on webhook data
-        console.log(`DeliveredOn: ${now.toISOString()}. Event:`, Util.inspect(webhookEvent, false, null, true));
-      } else {
-        const thumbTimestamp = req.get('X-Millicast-Timestamp');
-        const thumbFeedId = req.get('X-Millicast-Feed-Id');
-        const thumbStreamId = req.get('X-Millicast-Stream-Id');
-        console.log(`DeliveredOn: ${now.toISOString()}. GeneratedOn: ${(new Date(Number(thumbTimestamp))).toISOString()}. ` +
-          `FeedId: ${thumbFeedId}. StreamId: ${thumbStreamId}. ThumbnailSize: ${body.length}`);
-        FsA.writeFile(Path.join(thumbnailDir, `${thumbFeedId}_${thumbTimestamp}.jpg`), body)
-          .catch((err) => {
-            console.error(`Error writing thumbnail: ${err.stack}`);
-          });
-      }
+      const thumbTimestamp = req.get('X-Millicast-Timestamp');
+      const thumbFeedId = req.get('X-Millicast-Feed-Id');
+      const thumbStreamId = req.get('X-Millicast-Stream-Id');
+      console.log(
+        `DeliveredOn: ${now.toISOString()}. ` +
+        `GeneratedOn: ${new Date(thumbTimestamp).toISOString()}. ` +
+        `FeedId: ${thumbFeedId}. ` +
+        `StreamId: ${thumbStreamId}. ` +
+        `ThumbnailSize: ${body.length}`
+      );
+      
+      await FsA.writeFile(Path.join(thumbnailDir, `${thumbFeedId}_${thumbTimestamp}.jpg`), body);
 
       res.status(200).send('OK');
     });
